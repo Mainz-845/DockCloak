@@ -41,11 +41,28 @@ services:
     networks:
       - keycloak_network
 
+# 3. DBeaver Web Interface Component (CloudBeaver)
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest 
+    container_name: keycloak_dbeaver
+    restart: unless-stopped
+    ports:
+      - "8000:8978" # Access DBeaver in your browser at http://localhost:8000
+    depends_on:
+      - postgres # Ensure Postgres is running before DBeaver starts
+    networks:
+      - keycloak_network
+    # Optional: Persist DBeaver's configuration, users, and connections
+    # volumes:
+    #   - dbeaver_workspace:/opt/cloudbeaver/workspace
+
 volumes:
   postgres_data:
+    driver: local
+  dbeaver_workspace:
     driver: local
 
 networks:
   keycloak_network:
-
     driver: bridge
+
