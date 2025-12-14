@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. Database Component (PostgreSQL)
+  postgres:
+    image: postgres:15
+    container_name: keycloak_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password123  # CHANGE THIS in production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak_network
+
+  # 2. Keycloak Component
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: keycloak_web
+    restart: always
+    command: start-dev # Use 'start' for production (requires proper HTTPS setup)
+    environment:
+      # Connect to Postgres
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password123 # Match the Postgres password
+      
+      # Admin User Setup
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin  # CHANGE THIS
+      
+      # Hostname Configuration (Required for v24+)
+      KC_HOSTNAME: localhost
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - keycloak_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  keycloak_network:
+    driver: bridge
