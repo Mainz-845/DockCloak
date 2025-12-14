@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   # 1. Database Component (PostgreSQL)
@@ -35,7 +35,7 @@ services:
       # Hostname Configuration (Required for v24+)
       KC_HOSTNAME: localhost
     ports:
-      - "8080:8080"
+      - "9090:8080"
     depends_on:
       - postgres
     networks:
@@ -47,4 +47,5 @@ volumes:
 
 networks:
   keycloak_network:
+
     driver: bridge
